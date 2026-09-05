@@ -407,6 +407,14 @@
     white-space: nowrap;
     vertical-align: 2px;
   }
+
+@media print {
+  /* 한국어는 단어 중간에서 끊기지 않게 — "용량/의 97%" 방지 */
+  h1, h2, h3 { word-break: keep-all; }
+  h2, h3 { break-after: avoid; }
+  /* table 전체가 아니라 행 단위로만 — 긴 표가 통째로 다음 장에 밀리면 큰 공백이 생긴다 */
+  tr, li, pre { break-inside: avoid; }
+}
 </style>
 </head>
 <body>
