@@ -378,7 +378,7 @@ textarea.input { min-height: 90px; resize: vertical; }
                             style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
                             About Me</h2>
                         <div style="display:flex;flex-direction:column;gap:24px">
-                            <p style="margin:0;line-height:1.8">의료 전산 시스템을 개발·운영하는 SI 기업에서 <mark>2년 6개월</mark>간 백엔드 개발자로
+                            <p style="margin:0;line-height:1.8">의료 전산 시스템을 개발 및 운영하는 SI 기업에서 <mark>2년 6개월</mark>간 백엔드 개발자로
                                 일했습니다. Oracle, MSSQL 기반의 데이터 처리와 쿼리 최적화, 병원 전산 프로그램의 유지보수와 신규 기능 개발을 담당하며 <mark>200건
                                     이상</mark>의 현업 요구사항을 직접 분석, 개발 및 배포했습니다.</p>
                             <div>
@@ -558,7 +558,7 @@ textarea.input { min-height: 90px; resize: vertical; }
                             <p style="margin:10px 0 0;font-size:14px;color:var(--color-neutral-700);line-height:1.9">
                             <b style="color:var(--color-text);font-weight:600">기술 스택</b> &nbsp;Java 21, Spring Boot 4.0, JPA, PostgreSQL 17, Flyway, Spring Security, OAuth2, WebSocket, FCM, Testcontainers, Docker, AWS Lightsail, k6<br>
                             <b style="color:var(--color-text);font-weight:600">참여 인원</b> &nbsp;1인 (기획, 개발, 배포)<br>
-                            <b style="color:var(--color-text);font-weight:600">서비스</b> &nbsp;혼자 식사하는 사용자를 위치 · 시간 기준으로 연결하는 모바일 서비스</p>
+                            <b style="color:var(--color-text);font-weight:600">서비스</b> &nbsp;혼자 식사하는 사용자를 위치, 시간 기준으로 연결하는 모바일 서비스</p>
                             <ul style="margin:16px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:7px;list-style-type:disc">
                                 <li>장소 검색이 초당 4건에서 붕괴하는 병목을 k6 부하 테스트로 측정, <code>ORDER BY name</code>이 65만 행 전체 정렬을 유발하고 <code>Page</code> 반환을 위해 <code>COUNT</code> 쿼리를 더하던 것이 원인이었습니다. 쿼리 재설계 및 COUNT 제거(페이징 제거)로 <mark>처리량 4.4건/초 → 150건/초 이상(34배)</mark> 개선, <b>배포 후 운영 DB에서 재측정해</b> <mark>1,028ms → 1.4ms</mark> 확인</li>
                                 <li>쿼리 개선 후, <code>LIKE</code> 검색이 제네릭 실행계획으로 굳어 인덱스를 타지 않던 문제를 <code>plan_cache_mode=force_custom_plan</code> 적용으로 해결, <mark>최악 응답 227ms → 3ms</mark>로 전 구간 평탄화</li>
