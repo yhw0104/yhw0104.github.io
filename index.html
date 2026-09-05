@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>윤현우 — 백엔드 개발자</title>
+<meta name="description" content="윤현우 · 백엔드 개발자 이력서">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Lora:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Nanum+Myeongjo:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Classical — design-system tokens and component classes. This file is the source of truth for the system's look; retune it here and see readme.md. */
+:root {
+  --color-bg: #f3f2f2;
+  --color-surface: #eae9e9;
+  --color-text: #201f1d;
+  --color-accent: #b68235;
+  --color-accent-2: #ac803e;
+  --color-divider: color-mix(in srgb, #201f1d 16%, transparent);
+
+  /* Tonal ramps — generated in OKLCH on one shared lightness scale, so the
+     same step of any role matches the others in visual value. */
+  --color-neutral-100: #f8f4f4;
+  --color-neutral-200: #eae7e7;
+  --color-neutral-300: #d7d3d3;
+  --color-neutral-400: #bab6b6;
+  --color-neutral-500: #9b9797;
+  --color-neutral-600: #7d7979;
+  --color-neutral-700: #605d5d;
+  --color-neutral-800: #444141;
+  --color-neutral-900: #2d2b2b;
+
+  --color-accent-100: #fff3e4;
+  --color-accent-200: #ffe3bf;
+  --color-accent-300: #facb8d;
+  --color-accent-400: #e1ad66;
+  --color-accent-500: #c28d41;
+  --color-accent-600: #a06f24;
+  --color-accent-700: #7d5411;
+  --color-accent-800: #5a3b0a;
+  --color-accent-900: #3a270d;
+
+  --color-accent-2-100: #fff3e4;
+  --color-accent-2-200: #ffe3be;
+  --color-accent-2-300: #f5cd96;
+  --color-accent-2-400: #dbaf70;
+  --color-accent-2-500: #bc8f4e;
+  --color-accent-2-600: #9b7232;
+  --color-accent-2-700: #79561f;
+  --color-accent-2-800: #573d14;
+  --color-accent-2-900: #382810;
+
+  --font-heading: "Cormorant Garamond", system-ui, sans-serif;
+  --font-heading-weight: 600; /* review round 3: bold retired — semibold is the
+     interface headings' ceiling (they need the weight at small sizes); display
+     text goes lighter still, to the normal cut (see the deck) */
+  --font-body: "Lora", system-ui, sans-serif;
+
+  --space-1: 4.6px;
+  --space-2: 9.2px;
+  --space-3: 13.8px;
+  --space-4: 18.4px;
+  --space-6: 27.6px;
+  --space-8: 36.8px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 7px;
+
+  /* Elevation — derived from the ground: soft ink-tinted shadows on a
+     light theme, a hairline edge + ambient darkness on a dark one. */
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2d2b2b 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2d2b2b 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2d2b2b 22%, transparent);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+}
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+
+.plate{filter:sepia(0.22) saturate(0.82) contrast(1.05);box-sizing:border-box;
+  border:6px solid var(--color-surface);outline:1px solid var(--color-divider)}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Components — built with the tokens above. Plain CSS
+   on plain HTML: no JavaScript, no build step. Each class is documented in
+   readme.md and demonstrated in foundations/ and components/.
+   ══════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; font-size: 15px; line-height: 1.55; font-weight: 400; }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  line-height: 1.12; letter-spacing: -0.015em; margin: 0 0 var(--space-2);
+}
+h1 { font-size: 42px; }
+h2 { font-size: 32px; }
+h3 { font-size: 25px; }
+h4 { font-size: 20px; }
+h5 { font-size: 16px; }
+h6 { font-size: 13px; }
+h6 { letter-spacing: 0.08em; text-transform: uppercase; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+img { display: block; max-width: 100%; }
+figure { margin: 0; }
+figcaption {
+  font-size: 11px; margin-top: var(--space-1);
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+}
+.text-muted { color: color-mix(in srgb, var(--color-text) 55%, transparent); }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); }
+
+/* — rules — */
+.hr {
+  height: 1px; border: 0; margin: var(--space-4) 0;
+  background: var(--color-divider);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 14px; line-height: 1.2; color: var(--color-text); /* matches the .input's 14px —
+     the pair sits side by side in sign-up rows */
+  background: transparent; border: 1px solid transparent;
+  padding: var(--space-2) calc(var(--space-3) * 1.2);
+  border-radius: var(--radius-md);
+}
+.btn svg { display: block; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { color: var(--color-accent); border-color: var(--color-accent); }
+.btn-primary:hover { background: color-mix(in srgb, var(--color-accent) 12%, transparent); }
+.btn-primary:active { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+.btn-secondary { border-color: var(--color-divider); }
+.btn-secondary:hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.btn-secondary:active { background: color-mix(in srgb, var(--color-text) 14%, transparent); }
+.btn-ghost { color: var(--color-accent); padding-inline: var(--space-1); }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 10%, transparent); }
+.btn-ghost:active { background: color-mix(in srgb, var(--color-accent) 18%, transparent); }
+.btn-icon { width: 36px; height: 36px; padding: 0; }
+.btn-block { width: 100%; margin-top: var(--space-2); }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: color-mix(in srgb, var(--color-text) 70%, transparent);
+}
+.input {
+  width: 100%; min-height: 36px; padding: 6px 10px; font: inherit;
+  font-size: 14px; color: var(--color-text); caret-color: var(--color-accent);
+  background: transparent;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); outline-offset: 0; }
+textarea.input { min-height: 90px; resize: vertical; }
+.radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+.radio input, .seg-opt input {
+  position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
+}
+.radio .dot {
+  width: 16px; height: 16px; flex: none; border-radius: 50%;
+  border: 1.5px solid var(--color-divider);
+}
+.radio:hover .dot { border-color: var(--color-accent); }
+.radio input:checked + .dot {
+  border-color: var(--color-accent); background: var(--color-accent);
+  box-shadow: inset 0 0 0 4px var(--color-bg);
+}
+.radio input:focus-visible + .dot { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+.seg {
+  display: inline-flex; overflow: hidden;
+  border: 1px solid var(--color-divider); border-radius: var(--radius-md);
+}
+.seg-opt {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 12px; font-size: 13px; cursor: pointer;
+}
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.seg-opt:has(input:checked) { color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+.seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.seg-opt:has(input:focus-visible) { outline: 2px solid var(--color-accent); outline-offset: -2px; }
+
+/* — cards — */
+.card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-3); border-radius: var(--radius-md); background: transparent; border: 1px solid var(--color-divider);
+}
+.card-kicker { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent); }
+.card-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 17px; line-height: 1.2;
+}
+.card-body { margin: 0; font-size: 13px; opacity: 0.8; flex: 1; }
+.card-meta {
+  display: flex; align-items: center; gap: 6px; font-size: 11px;
+  color: color-mix(in srgb, var(--color-text) 50%, transparent);
+}
+.elev-sm { box-shadow: var(--shadow-sm); }
+.elev-md { box-shadow: var(--shadow-md); }
+.elev-lg { box-shadow: var(--shadow-lg); }
+
+/* — tags — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 11px;
+  letter-spacing: 0.02em; padding: 3px 10px;
+  border-radius: calc(var(--radius-md) * 0.75);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-accent-2 { background: var(--color-accent-2-100); color: var(--color-accent-2-800); }
+.tag-neutral { background: var(--color-neutral-100); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent); color: var(--color-accent); }
+
+/* — navigation — */
+.nav {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+}
+.nav-brand {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 18px; margin-right: auto;
+}
+.nav a { color: inherit; text-decoration: none; font-size: 14px; }
+.nav a:hover, .nav a[aria-current='page'] { color: var(--color-accent); }
+
+/* — tables — */
+.table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.table th {
+  text-align: left; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text) 60%, transparent);
+  padding: var(--space-2); border-bottom: 1px solid var(--color-divider);
+}
+.table td {
+  padding: var(--space-2);
+  border-bottom: 1px solid var(--color-divider);
+}
+.table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+/* — dialog — */
+.dialog-backdrop {
+  position: fixed; inset: 0; display: grid; place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+}
+.dialog {
+  width: min(440px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); border-radius: var(--radius-lg);
+  background: var(--color-surface); box-shadow: var(--shadow-lg); border: 1px solid var(--color-divider);
+}
+.dialog-title {
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 20px;
+}
+.dialog-body { font-size: 14px; opacity: 0.85; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+
+</style>
+<style>
+
+                html {
+                    scroll-behavior: smooth
+                }
+
+                body {
+                    margin: 0;
+                    background: var(--color-bg)
+                }
+
+                a {
+                    color: var(--color-text);
+                    text-decoration: none;
+                    border-bottom: 1px solid var(--color-accent-300)
+                }
+
+                a:hover {
+                    color: var(--color-text);
+                    border-bottom-color: var(--color-text)
+                }
+
+                a:focus-visible {
+                    outline: 2px solid var(--color-accent);
+                    outline-offset: 2px
+                }
+
+                p,
+                li {
+                    max-width: 82ch
+                }
+
+                section[id],
+                header {
+                    scroll-margin-top: 76px
+                }
+
+                mark {
+                    background: linear-gradient(transparent 58%, var(--color-accent-200) 58%);
+                    color: inherit;
+                    padding: 0 1px
+                }
+
+                @media print {
+                    .topnav {
+                        display: none
+                    }
+                }
+
+                @media (max-width:860px) {
+                    .row {
+                        grid-template-columns: 1fr !important;
+                        gap: 8px !important
+                    }
+
+                    .topnav {
+                        display: none
+                    }
+                }
+            
+</style>
+</head>
+<body>
+<div data-screen-label="웹 이력서"
+            style="font-family:'IBM Plex Sans KR','Apple SD Gothic Neo',sans-serif;letter-spacing:-0.01em;color:var(--color-text);background:var(--color-bg);font-size:16px;line-height:1.75;font-feature-settings:'tnum';width:100%;min-height:100vh">
+
+            <nav class="topnav"
+                style="position:sticky;top:0;z-index:10;background:color-mix(in srgb, var(--color-bg) 92%, transparent);backdrop-filter:blur(6px);border-bottom:1px solid var(--color-divider)">
+                <div
+                    style="width:100%;padding:14px clamp(20px,5vw,72px);display:flex;justify-content:space-between;align-items:center;gap:20px">
+                    <span
+                        style="font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:19px;font-weight:600">윤현우</span>
+                    <div style="display:flex;gap:20px;font-size:13px;letter-spacing:0.04em">
+                        <a href="#about" style="border-bottom:none;color:var(--color-neutral-700)"
+                            style-hover="color:var(--color-text)">소개</a>
+                        <a href="#skill" style="border-bottom:none;color:var(--color-neutral-700)"
+                            style-hover="color:var(--color-text)">스킬</a>
+                        <a href="#experience" style="border-bottom:none;color:var(--color-neutral-700)"
+                            style-hover="color:var(--color-text)">경력</a>
+                        <a href="#project" style="border-bottom:none;color:var(--color-neutral-700)"
+                            style-hover="color:var(--color-text)">프로젝트</a>
+                        <a href="#education" style="border-bottom:none;color:var(--color-neutral-700)"
+                            style-hover="color:var(--color-text)">학력</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div style="width:100%;padding:0 clamp(20px,5vw,72px) 120px">
+
+                <header
+                    style="padding:72px 0 32px;border-bottom:2px solid var(--color-text);display:flex;justify-content:space-between;align-items:flex-end;gap:40px;flex-wrap:wrap">
+                    <div>
+                        <h1
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:400;font-size:44px;line-height:1.05;letter-spacing:-0.01em">
+                            윤현우</h1>
+                        <p
+                            style="margin:10px 0 0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:20px;font-weight:400;color:var(--color-neutral-700)">
+                            백엔드 개발자</p>
+                    </div>
+                    <p style="margin:0;font-size:14px;line-height:1.9;color:var(--color-neutral-700);text-align:right">
+                        010-6263-5367 &nbsp;·&nbsp; <a href="mailto:yhw0104@naver.com">yhw0104@naver.com</a><br>
+                        <a href="https://github.com/yhw0104">github.com/yhw0104</a> &nbsp;·&nbsp; <a
+                            href="https://velog.io/@yoon_bly">velog.io/@yoon_bly</a>
+                    </p>
+                </header>
+
+                <section id="about" style="padding:52px 0 0">
+                    <div class="row"
+                        style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
+                            About Me</h2>
+                        <div style="display:flex;flex-direction:column;gap:24px">
+                            <p style="margin:0;line-height:1.8">의료 전산 시스템을 개발·운영하는 SI 기업에서 <mark>2년 6개월</mark>간 백엔드 개발자로
+                                일했습니다. Oracle, MSSQL 기반의 데이터 처리와 쿼리 최적화, 병원 전산 프로그램의 유지보수와 신규 기능 개발을 담당하며 <mark>200건
+                                    이상</mark>의 현업 요구사항을 직접 분석, 개발 및 배포했습니다.</p>
+                            <div>
+                                <h3
+                                    style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:19px;font-weight:600;line-height:1.45;border-left:3px solid var(--color-accent);padding-left:12px">
+                                    사용자의 불편함을 먼저 찾아서 해결합니다</h3>
+                                <p style="margin:0;padding-left:15px">요청받은 기능을 그대로 만드는 데 그치지 않고, 어떤 구조여야 사용자가 편해지는지를 먼저
+                                    고민합니다. 병리사, 의료진 등 다양한 사용자, 동료 개발자와 직접 소통하며 요구사항 정의부터 배포까지 전 과정을 책임졌고, <mark>요청으로
+                                        올라오기 전에 필요한 기능을 먼저 제안</mark>한 적도 여러 번 있습니다. 비효율적인 수작업을 찾아 시스템으로 옮기는 일에 보람을 느낍니다.
+                                </p>
+                            </div>
+                            <div>
+                                <h3
+                                    style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:19px;font-weight:600;line-height:1.45;border-left:3px solid var(--color-accent);padding-left:12px">
+                                    레거시 시스템의 근본적인 원인을 추적하는 것을 즐깁니다</h3>
+                                <p style="margin:0;padding-left:15px">오래된 코드가 가진 구조적 결함이나 비효율을 발견하면 임시방편으로 덮지 않고 원인을 끝까지
+                                    추적합니다. 흩어져 있던 처리 경로를 하나씩 따라가 정합성이 깨진 지점을 찾아내 수정하고, 복잡하게 얽힌 쿼리를 단순하고 명확한 구조로 다시 짜
+                                    왔습니다.</p>
+                            </div>
+                            <div>
+                                <h3
+                                    style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:19px;font-weight:600;line-height:1.45;border-left:3px solid var(--color-accent);padding-left:12px">
+                                    시스템의 안정성과 유연한 확장성을 함께 고민합니다</h3>
+                                <p style="margin:0;padding-left:15px">위탁업체별 파편화된 연동 방식으로 인해 교체 시마다 재개발이 발생하는 문제를 겪으며,
+                                    <mark>결합도를 낮추는 설계의 중요성</mark>을 배웠습니다. 외부 통신부를 원내 핵심 로직과 분리해 모듈 교체만으로 대응 가능한 구조를
+                                    만들었고, 구간별 오류 코드를 정의해 장애 발생 시 실패 지점을 즉시 추적할 수 있도록 했습니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="hr" style="margin:52px 0">
+
+                <section id="skill">
+                    <div class="row"
+                        style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
+                            Skill</h2>
+                        <div>
+                            <p style="margin:0 0 20px;font-size:14px;color:var(--color-neutral-700)">실무와 개인 프로젝트에서 사용한 기술입니다.
+                            </p>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px 36px">
+                                <div>
+                                    <h3
+                                        style="margin:0 0 6px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:19px">
+                                        Backend</h3>
+                                    <p style="margin:0;font-size:15px">Java, Spring, Spring Boot, JPA, C#, .NET Framework, VB, Delphi
+                                    </p>
+                                </div>
+                                <div>
+                                    <h3
+                                        style="margin:0 0 6px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:19px">
+                                        Database</h3>
+                                    <p style="margin:0;font-size:15px">Oracle, MSSQL (대용량 쿼리 최적화 및 정합성 관리)</p>
+                                </div>
+                                <div>
+                                    <h3
+                                        style="margin:0 0 6px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:19px">
+                                        Tools</h3>
+                                    <p style="margin:0;font-size:15px">Git, GitLab, DBeaver, Tibero, Postman</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="hr" style="margin:52px 0">
+
+                <section id="experience">
+                    <div class="row"
+                        style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
+                            Experience</h2>
+                        <div>
+                            <div
+                                style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+                                <h3
+                                    style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:32px;line-height:1.15">
+                                    ACK</h3>
+                                <span style="font-size:14px;color:var(--color-neutral-700);white-space:nowrap">2023.09 –
+                                    2026.03</span>
+                            </div>
+                            <p style="margin:6px 0 0;font-size:14px;color:var(--color-neutral-700)"><a
+                                    href="https://www.ack.co.kr/">ack.co.kr</a> · 국내 350여 개 의료기관에 진단검사정보시스템(LIS)을 구축 실적을
+                                보유한 의료 IT 기업</p>
+                            <p style="margin:14px 0 0;font-size:16px;font-weight:600">백엔드 개발자 <span
+                                    style="font-weight:400;color:var(--color-neutral-700)">— 진단검사의학과 검사실 · 혈액은행
+                                    파트</span></p>
+                            <p style="margin:6px 0 0;font-size:14px;color:var(--color-neutral-700)">삼육서울병원, 원주세브란스병원,
+                                전북대병원, 국립중앙의료원 등 LIS 구축 및 유지보수</p>
+                            <hr class="hr" style="margin:24px 0 28px">
+
+                            <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:26px">
+                                <li>
+                                    <p
+                                        style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:21px;font-weight:600;line-height:1.3">
+                                        혈액은행 재고 데이터 정합성 보장 및 처리 구조 개편</p>
+                                    <ul
+                                        style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;list-style-type:disc">
+                                        <li>개요: 실물-전산 수량 불일치 문제로 인한 재고 반영 로직 수정 및 월별 사용량 통계 쿼리 최적화</li>
+                                        <li>문제 상황:</li>
+                                        <ul style="list-style-type:circle">
+                                            <li>일부 상태 변경 경로에서 재고 테이블 반영 누락 발생 → 실물-전산 재고 불일치로 매월 수동 대조 작업 필요</li>
+                                            <li>월별 혈액 사용량 통계 조회 시 60초 이상 소요 및 타임아웃 발생</li>
+                                        </ul>
+                                        <li>문제 해결 (Action):</li>
+                                        <ul style="list-style-type:circle">
+                                            <li><b>원인 분석:</b> 여러 화면, 프로그램에 흩어져 있던 재고 반영 로직을 전수 확인, 상태 변경이 반영되지 않는 경로를 찾아
+                                                수정</li>
+                                            <li><b>산출 기준 분리:</b> 실시간 재고 조회는 수정한 재고 테이블 기준으로 유지하고, 월별 사용량 통계는 혈액팩 고유번호
+                                                단위로 상태 전이 이력을 집계하도록 분리</li>
+                                            <li><b>성능 최적화:</b> 이력 집계로 늘어난 조회 비용을 WITH절 단계 분리, 인덱스 적용, 월 단위로 나눠 집계 후 병합하는
+                                                방식으로 해소</li>
+                                        </ul>
+                                        <li>주요 성과:</li>
+                                        <ul style="list-style-type:circle">
+                                            <li><mark>재고 수량 오차율 0% 달성</mark> 및 월말 수동 재고 대조 공수 100% 절감</li>
+                                            <li>월별 사용량 통계 조회 속도 약 <mark>78% 단축</mark> (60초 이상 → 13초)</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <p
+                                        style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:21px;font-weight:600;line-height:1.3">
+                                        위탁업체 외부 시스템 API 연동 개발 및 업체별 연동 구조 분리</p>
+                                    <ul
+                                        style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:5px;list-style-type:disc">
+                                        <li>개요: 위탁 검사 접수 및 결과 수신 연동, 업체 교체 대응 — SOAP 연동 개발 및 업체별 연동 모듈 분리</li>
+                                        <li>문제 상황:</li>
+                                        <ul style="list-style-type:circle">
+                                            <li>기존 위탁업체 데이터베이스에 직접 접속해 검사 결과를 조회하는 구조로 인한 높은 시스템 결합도 발생</li>
+                                            <li>업체마다 연동 방식(REST, SOAP)이 달라 교체 시마다 연동을 새로 개발</li>
+                                            <li>이미지로 제공되는 검사 결과는 수신 불가, 담당자가 업체 홈페이지에서 내려받아 원내 시스템에 직접 등록</li>
+                                        </ul>
+                                        <li>문제 해결 (Action):</li>
+                                        <ul style="list-style-type:circle">
+                                            <li><b>연동 개발:</b> SOAP 기반으로 위탁 검사 접수 전송부터 결과 수신까지 연동 개발, 수신한 XML을 파싱해 원내 검사
+                                                결과로 저장</li>
+                                            <li><b>장애 대응:</b> 데이터 조회 실패, 파싱 실패 등 단계별 오류 코드를 정의해, 실패 시 어느 구간에서 오류가 발생했는지
+                                                확인 가능하도록 구성</li>
+                                            <li><b>모듈 분리:</b> 원내 비즈니스 로직과 외부 통신 모듈을 분리하고, 공통 인터페이스를 정의하여 업체 교체 시 연동 모듈만
+                                                플러그인 형태로 교체 가능하도록 설계</li>
+                                        </ul>
+                                        <li>주요 성과:</li>
+                                        <ul style="list-style-type:circle">
+                                            <li>이미지 결과까지 자동 수신 및 반영 → <mark>일 100건 이상을 업체 홈페이지에서 직접 내려받아 등록하던 작업 제거</mark></li>
+                                            <li>외부 DB 직접 접속 방식을 제거하여 보안 위험 요소 단절</li>
+                                            <li>일 500건 이상 위탁 검사 결과를 검사 업무 중단 없이 신규 위탁업체로 전환</li>
+                                        </ul>
+                                    </ul>
+                                </li>
+                                <!-- <li>
+                                    <p
+                                        style="margin:0 0 8px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-size:21px;font-weight:600;line-height:1.3">
+                                        CRM 입찰 관리 시스템 신규 구축</p>
+                                    <p style="margin:0">담당자별 문서로 흩어져 있던 입찰 정보를 시스템으로 옮겼습니다. 입찰 데이터 관리
+                                        프로세스를 정의하고 화면과 백엔드를 구축해, 진행 상태 확인과 집계가 시스템에서 가능해졌습니다.</p>
+                                </li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="hr" style="margin:52px 0">
+
+                <section id="project">
+                    <div class="row" style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2 style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">Project</h2>
+                        <div>
+                            <div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+                                <h3 style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:32px;line-height:1.15">혼정 — 위치 기반 혼밥 매칭 서비스</h3>
+                                <span style="font-size:14px;color:var(--color-neutral-700);white-space:nowrap;font-family:'IBM Plex Mono',monospace">2026.06 – 2026.09</span>
+                            </div>
+                            <p style="margin:10px 0 0;font-size:14px;color:var(--color-neutral-700);line-height:1.9">
+                            <b style="color:var(--color-text);font-weight:600">기술 스택</b> &nbsp;Java 21, Spring Boot 4.0, JPA, PostgreSQL 17, Flyway, Spring Security, OAuth2, WebSocket, FCM, Testcontainers, Docker, AWS Lightsail, k6<br>
+                            <b style="color:var(--color-text);font-weight:600">참여 인원</b> &nbsp;1인 (기획, 개발, 배포)<br>
+                            <b style="color:var(--color-text);font-weight:600">서비스</b> &nbsp;혼자 식사하는 사용자를 위치 · 시간 기준으로 연결하는 모바일 서비스</p>
+                            <ul style="margin:16px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:7px;list-style-type:disc">
+                                <li>장소 검색이 초당 4건에서 붕괴하는 병목을 k6 부하 테스트로 측정, <code>ORDER BY name</code>이 65만 행 전체 정렬을 유발하고 <code>Page</code> 반환을 위해 <code>COUNT</code> 쿼리를 더하던 것이 원인이었습니다. 쿼리 재설계 및 COUNT 제거(페이징 제거)로 <mark>처리량 4.4건/초 → 150건/초 이상(34배)</mark> 개선, <b>배포 후 운영 DB에서 재측정해</b> <mark>1,028ms → 1.4ms</mark> 확인</li>
+                                <li>쿼리 개선 후, <code>LIKE</code> 검색이 제네릭 실행계획으로 굳어 인덱스를 타지 않던 문제를 <code>plan_cache_mode=force_custom_plan</code> 적용으로 해결, <mark>최악 응답 227ms → 3ms</mark>로 전 구간 평탄화</li>
+                                <li>과부하 해제 후에도 서버가 회복되지 않던 장애의 원인이 클라이언트 재시도 1회임을 재시도 ON/OFF 대조 실험으로 규명, 5xx·429 재시도를 제거해 <mark>복귀 응답 8,985ms → 723ms</mark></li>
+                                <li>Kakao/Apple 소셜 로그인 구현 시 OIDC 토큰의 aud 검증을 추가해 타 앱 토큰 가입을 차단하고, Access/Refresh/온보딩 3가지 토큰을 분리해 가입 미완료 사용자의 API 접근을 제한</li>
+                                <li>체크인을 <mark>모집중 → 매칭 성공 시 '같이 먹는 중', 실패 시 '혼밥중'</mark>으로 전이하는 상태 머신으로 설계, "동시에 1개만 가질 수 있다"는 규칙을 <mark>DB 부분 유니크 인덱스로 강제</mark>하고 매칭 수락 시 발생하는 8개 단계의 로직을 하나의 트랜잭션으로 묶어 데이터 깨짐 방지</li>
+                                <li>데이터 성격별로 폴링·WebSocket·FCM을 구분 적용하고, 푸시의 배달 미보장에 대비해 폴링을 안전망으로 유지</li>
+                                <li>Testcontainers 기반 통합 테스트 827개 구축, Flyway 마이그레이션 30개로 스키마 이력 관리</li>
+                            </ul>
+                            <p style="margin:16px 0 0;font-size:14px"><a href="https://github.com/yhw0104/HonJeong">GitHub 저장소</a> &nbsp;·&nbsp; <a href="https://yhw0104.github.io/loadtest/">부하 테스트 상세</a></p>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="hr" style="margin:52px 0">
+
+                <section id="education">
+                    <div class="row"
+                        style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
+                            Education</h2>
+                        <div style="display:flex;flex-direction:column;gap:20px">
+                            <div>
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+                                    <h3
+                                        style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:22px">
+                                        한서대학교 항공컴퓨터공학과</h3>
+                                    <span
+                                        style="font-size:14px;color:var(--color-neutral-700);white-space:nowrap">2018.03
+                                        – 2024.02</span>
+                                </div>
+                                <p style="margin:4px 0 0;font-size:15px;color:var(--color-neutral-700)">학사 졸업<br><br>
+                                </p>
+                            </div>
+                            <div>
+                                <div
+                                    style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap">
+                                    <h3
+                                        style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:22px">
+                                        정보처리기사</h3>
+                                    <span
+                                        style="font-size:14px;color:var(--color-neutral-700);white-space:nowrap">2025.09</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <hr class="hr" style="margin:52px 0">
+
+                <section id="etc">
+                    <div class="row"
+                        style="display:grid;grid-template-columns:minmax(150px,14%) 1fr;gap:clamp(28px,4vw,64px)">
+                        <h2
+                            style="margin:0;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:var(--color-text);padding-top:8px">
+                            기록</h2>
+                        <div>
+                            <h3
+                                style="margin:0 0 6px;font-family:'Cormorant Garamond','Nanum Myeongjo',serif;font-weight:600;font-size:22px">
+                                기술 블로그</h3>
+                            <p style="margin:0 0 6px;font-size:14px"><a
+                                    href="https://velog.io/@yoon_bly">velog.io/@yoon_bly</a></p>
+                            <p style="margin:0">프로젝트에서 만난 문제와 해결 과정을 정리해 기록합니다.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <footer
+                    style="margin-top:72px;padding-top:24px;border-top:2px solid var(--color-text);display:flex;justify-content:space-between;align-items:baseline;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--color-neutral-700)">
+                    <span>윤현우 · <a href="mailto:yhw0104@naver.com">yhw0104@naver.com</a> · 010-6263-5367</span>
+                    <span><br></span>
+                </footer>
+
+            </div>
+        </div>
+</body>
+</html>
