@@ -409,6 +409,13 @@
   }
 
 @media print {
+  /* 배경을 지면 끝까지 채우고, 여백은 body의 안쪽 패딩이 맡는다.
+     clone = 페이지가 넘어가도 배경과 안쪽 여백이 매 장 반복된다(없으면 2장부터 글이 종이 끝에 붙는다). */
+  @page { size: A4; margin: 0; }
+  body {
+    padding: 18mm 16mm;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  }
   /* 한국어는 단어 중간에서 끊기지 않게 — "용량/의 97%" 방지 */
   h1, h2, h3 { word-break: keep-all; }
   h2, h3 { break-after: avoid; }
