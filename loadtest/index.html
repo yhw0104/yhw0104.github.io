@@ -408,19 +408,46 @@
     vertical-align: 2px;
   }
 
+table.left th, table.left td { text-align: left; white-space: normal; }
+
 @media print {
-  /* 배경을 지면 끝까지 채우고, 여백은 body의 안쪽 패딩이 맡는다.
-     clone = 페이지가 넘어가도 배경과 안쪽 여백이 매 장 반복된다(없으면 2장부터 글이 종이 끝에 붙는다). */
   @page { size: A4; margin: 0; }
   body {
-    padding: 18mm 16mm;
+    padding: 14mm 15mm;
     -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    font-size: 12.5px; line-height: 1.6;
   }
-  /* 한국어는 단어 중간에서 끊기지 않게 — "용량/의 97%" 방지 */
-  h1, h2, h3 { word-break: keep-all; }
-  h2, h3 { break-after: avoid; }
-  /* table 전체가 아니라 행 단위로만 — 긴 표가 통째로 다음 장에 밀리면 큰 공백이 생긴다 */
-  tr, li, pre { break-inside: avoid; }
+  .wrap { max-width: none; }
+  header { padding: 0; }
+  .kicker { margin: 0 0 8px; font-size: 10.5px; }
+  h1 { font-size: 26px; margin: 0 0 8px; }
+  .lede { font-size: 13.5px; }
+  .headline { margin: 14px 0 0; }
+  .headline > div { padding: 10px 14px; }
+  .headline .fig { font-size: 22px; margin: 0 0 2px; }
+  .headline .label { margin: 0 0 4px; }
+  section.stage, section.stage:first-of-type { margin-top: 22px; }
+  h2 { font-size: 18px; margin: 0 0 2px; }
+  .h2note { font-size: 12px; margin: 0 0 8px; }
+  h3 { font-size: 14px; margin: 14px 0 5px; }
+  h4 { font-size: 13px; margin: 10px 0 4px; }
+  p { margin: 0 0 7px; }
+  table { font-size: 11.5px; }
+  th, td { padding: 4px 10px; }
+  thead th { font-size: 10px; }
+  .scroll { margin: 0 0 8px; }
+  pre { font-size: 11px; line-height: 1.5; padding: 7px 12px; margin: 0 0 8px; }
+  .callout { padding: 8px 14px; margin: 0 0 8px; }
+  .callout .tag { margin-bottom: 2px; }
+  .caption { font-size: 11.5px; margin: 4px 0 0; }
+  .caption + .callout { margin-top: 8px; }
+  .bar-row { margin-bottom: 5px; }
+  .bar { height: 16px; }
+  footer { margin-top: 18px; padding-top: 8px; font-size: 10.5px; }
+  h1, h2, h3, h4, p, td, li { word-break: keep-all; }
+  h2, h3, h4 { break-after: avoid; }
+  tr, li, pre, .callout { break-inside: avoid; }
+  section.stage + section.stage { break-before: page; margin-top: 0; }
 }
 </style>
 </head>
@@ -430,152 +457,58 @@
 <header>
   <p class="kicker">혼정 · 백엔드 성능 개선 부하 테스트 · 2026-08 ~ 09</p>
   <h1>검색 하나가 서버 용량의 97%를 쓰고 있었다</h1>
-  <p class="lede">
-    2vCPU 환경의 한계를 k6 부하 테스트로 검증했습니다. 발견한 3개 검색 쿼리의 병목을 개선해,
-    <br>처리량을 34배 이상 끌어올리고 운영에 배포했다.
-  </p>
-
+  <p class="lede">2vCPU 서버의 한계를 k6 부하 테스트로 측정하고, 검색 쿼리의 병목 네 곳을 고쳐 처리량을 34배 이상 끌어올린 뒤 운영에 배포했습니다.</p>
   <div class="headline">
-    <div>
-      <p class="label">검색 처리량</p>
-      <p class="fig">34배 이상</p>
-      <p class="sub">4.4건/초 → 150건/초에도 여유</p>
-    </div>
-    <div>
-      <p class="label">검색 응답시간</p>
-      <p class="fig">558배</p>
-      <p class="sub">669.8ms → 1.2ms</p>
-    </div>
-    <div>
-      <p class="label">최대 부하 시 CPU</p>
-      <p class="fig">197% → 20%</p>
-      <p class="sub">2코어 포화 → 여유</p>
-    </div>
+    <div><p class="label">검색 처리량</p><p class="fig">34배 이상</p><p class="sub">4.4건/초 → 150건/초에도 여유</p></div>
+    <div><p class="label">검색 응답시간</p><p class="fig">558배</p><p class="sub">669.8ms → 1.2ms</p></div>
+    <div><p class="label">최대 부하 시 DB CPU</p><p class="fig">197% → 20%</p><p class="sub">2코어 포화 → 여유</p></div>
   </div>
 </header>
 
-<!-- ══════════ 0. 문제 정의 및 테스트 배경 ══════════ -->
+<!-- ══════════ 1. 배경과 측정 방법 ══════════ -->
 <section class="stage">
-  <div class="step"><span class="step-no">STEP 00</span><h2>문제 정의 및 테스트 배경</h2></div>
-  <p class="h2note">이 테스트를 왜 했는지, 어디를 의심했는지부터 짚는다.</p>
+  <div class="step"><span class="step-no">STEP 01</span><h2>배경과 측정 방법</h2></div>
+  <p class="h2note">무엇을 의심했고, 어떤 환경과 시나리오로 쟀는지</p>
 
-  <h3>어떤 서비스가, 어떤 서버 위에 올라가 있나</h3>
   <p>
-    <b>"혼정"</b>은 혼자 밥 먹는 사람을 위한 앱이다. 식당을 검색하고, 같이 먹을 사람을 찾고,
-    혼자 먹거나, 채팅으로 약속을 잡는다.
-    <br>이 중 <strong>식당 검색이 첫 화면</strong>이라 가장 자주 호출된다.
+    혼정은 혼자 밥 먹는 사람을 위한 매칭 앱이고, <strong>식당 검색이 첫 화면</strong>이라 가장 자주 호출됩니다.
+    코드에서 &lsquo;호출 빈도&rsquo;와 &lsquo;1회 호출 시 DB가 읽는 행 수&rsquo;를 기준으로 후보를 추렸고,
+    65만 행에 <code>LIKE '%검색어%'</code>를 거는 <strong>식당 검색</strong>과 반경 안의 행을 전부 꺼내는 <strong>주변 식당 검색</strong>이 가장 위험해 보여 해당 기능을 집중적으로 테스트 했습니다.
   </p>
+
+  <h3>측정 환경 — 운영 사양을 로컬 컨테이너로 재현</h3>
+  <p>운영은 소셜 로그인만 받아 가상 사용자를 만들 수 없어서, <code>docker-compose.loadtest.yml</code> 오버레이로 로컬에 같은 조건을 만들었습니다.</p>
   <div class="scroll">
-    <table>
-      <thead><tr><th>항목</th><th>내용</th></tr></thead>
+    <table class="left">
+      <thead><tr><th>항목</th><th>운영 서버</th><th>로컬 재현</th></tr></thead>
       <tbody>
-        <tr><td>서버</td><td>AWS Lightsail 1대 — 2vCPU / 1,907MB</td></tr>
-        <tr><td>구성</td><td>앱 서버와 DB 서버가 <strong>한 서버(1대)를 공유하는 단일 인스턴스 구조</strong></td></tr>
-        <tr><td>데이터</td><td>식당 655,163행 (공공데이터 적재)</td></tr>
-        <tr><td>상태</td><td>서버 상시 가동, 앱 TestFlight 배포</td></tr>
+        <tr><td>CPU</td><td>Lightsail 2vCPU, 앱, DB가 한 서버를 공유</td><td><code>cpuset</code>으로 앱·DB를 같은 코어 2개에 고정</td></tr>
+        <tr><td>메모리</td><td>1,907MB</td><td>1,900MB 제한 → JVM 힙 476MB (같은 비율)</td></tr>
+        <tr><td>데이터</td><td>식당 655,161행</td><td>655,163행 (같은 쿼리 비용)</td></tr>
+        <tr><td>기타</td><td>—</td><td>SQL 로그 끔(측정 오차 방지) / 가상 사용자 300명</td></tr>
       </tbody>
     </table>
   </div>
-  <h3>어디를 의심했나</h3>
-  <p>
-    부하가 몰릴 만한 지점을 코드에서 먼저 훑어 후보를 추렸다. 기준은 두 가지<br>
-    <strong>'사용자의 호출 빈도'</strong>, 그리고
-    <strong>'1회 호출 시 DB가 스캔하는 행(Row) 수'</strong>
-    <br>그렇게 검색 기능에 대한 부하 테스트를 진행하였다.
-  </p>
+  <p class="caption">로컬 CPU가 운영보다 3~4배 빨라 절대 수치는 맞출 수 없어서, <strong>개선 전후 비율</strong>로 판단하고 실제 수치는 배포 후 운영 DB에서 따로 쟀습니다.</p>
+
+  <h3>시나리오</h3>
   <div class="scroll">
-    <table>
-      <thead><tr><th>의심 지점</th><th>왜 위험해 보였나</th></tr></thead>
+    <table class="left">
+      <thead><tr><th>시나리오</th><th style="text-align:left">질문</th><th style="text-align:left">방법</th><th style="text-align:left">지표</th></tr></thead>
       <tbody>
-        <tr><td>식당 검색 (전국)</td><td>65만 행에서 <code>LIKE '%검색어%'</code> — 색인이 잘 듣지 않는 형태</td></tr>
-        <tr><td>주변 식당 검색 (좌표)</td><td>반경 안의 행을 전부 꺼내 온 뒤 서버에서 거리를 계산</td></tr>
+        <tr><td>① 검색 램프업</td><td style="text-align:left;white-space:normal">초당 최대 몇 건까지 처리하나</td><td style="text-align:left;white-space:normal">2글자 검색을 초당 0.5→6건으로 올리며 단계마다 30초 유지</td><td style="text-align:left;white-space:normal">처리량 , p95 , DB CPU , 커넥션</td></tr>
+        <tr><td>② 검색어 길이 비교</td><td style="text-align:left;white-space:normal">길이에 따라 느려지나</td><td style="text-align:left;white-space:normal">2·3·4글자 × 위치 유무 6조합을 하나씩 요청</td><td style="text-align:left;white-space:normal">길이별 응답시간 중앙값</td></tr>
       </tbody>
     </table>
   </div>
-  <p class="caption">
-    후보는 이 밖에도 알림 폴링, 채팅 목록 등 몇 곳이 더 있었다. 이 지점들도 같은 방식으로
-    측정했고, 결과는 <strong>현재 규모에서 문제 없음</strong>이었다.
-    그래서 아래에서는 실제로 손을 댄 세 곳을 다룬다.
-  </p>
-</section>
-
-<!-- ══════════ 1. 테스트 시나리오 및 목표 ══════════ -->
-<section class="stage">
-  <div class="step"><span class="step-no">STEP 01</span><h2>테스트 시나리오 및 목표</h2></div>
-  <p class="h2note">두 가지 질문을 정하고, 각각에 답할 지표(KPI)를 먼저 정의했다.</p>
-
-  <h3>측정 환경 — 운영 사양을 컨테이너로 재현</h3>
-  <p>
-    운영 서버(Lightsail 2vCPU / 1,907MB)에는 직접 부하를 걸 수 없다.<br>
-    실제 소셜 로그인만 받으므로 가상 사용자를 만들 방법 자체가 없다.<br>
-    그래서 로컬에 같은 조건을 만들었다 — <code>docker-compose.loadtest.yml</code> 오버레이 하나로
-    <strong>운영 사양을 재현</strong>한다.
-  </p>
-  <pre><code># docker-compose.loadtest.yml  (평소 compose에 덧씌워 실행)
-services:
-  db:
-    cpuset: "0,1"          # ★앱과 같은 코어 2개를 나눠 쓴다
-  app:
-    cpuset: "0,1"
-    mem_limit: 1900m       # 운영 1,907MB → JVM 힙 476MB
-    environment:
-      SPRING_JPA_SHOW_SQL: "false"</code></pre>
-  <div class="scroll">
-    <table>
-      <thead><tr><th>항목</th><th>설정</th><th>이유</th></tr></thead>
-      <tbody>
-        <tr><td>CPU</td><td><code>cpuset</code>으로 앱·DB를 같은 코어 2개에 고정</td><td>운영 환경의 리소스 경합(CPU Contention) 상황 재현</td></tr>
-        <tr><td>메모리</td><td>1,900MB → JVM 힙 476MB</td><td>운영 환경과 동일한 힙 메모리 비율(자동 계산) 적용</td></tr>
-        <tr><td>데이터</td><td>식당 655,163행</td><td>운영(655,161행)과 같은 쿼리 비용</td></tr>
-        <tr><td>SQL 로그</td><td>비활성화</td><td>파일 I/O 및 로깅 오버헤드로 인한 성능 측정 오차 방지</td></tr>
-        <tr><td>가상 사용자</td><td>300명</td><td>피크 타임 동시 접속 부하 환경 재현</td></tr>
-      </tbody>
-    </table>
-  </div>
-  <p class="caption">
-    로컬(Mac)과 운영 서버 간 코어 성능 차이(약 3~4배)로 인해 절대적인 처리 속도를 동일하게 맞추기는 어려웠다.<br>
-    따라서 부하 테스트에서는 절대 수치 대신 <strong>'개선 전후의 성능 향상 비율'</strong>을 검증 기준으로 삼았으며, 
-    정확한 TPS 및 응답 속도는 배포 후 운영 DB 환경에서 별도로 측정했다(STEP 04).
-  </p>
-
-  <div class="test">
-    <div class="test-head"><span class="test-no">시나리오 1</span><span class="test-name">검색 램프업</span></div>
-    <dl>
-      <dt>질문</dt>
-      <dd>서버의 초당 최대 검색 처리량(임계치) 측정</dd>
-      <dt>방법</dt>
-      <dd>2글자 검색어를 초당 0.5 → 1 → 2 → 3 → 4 → 6건으로 보낸다.
-          각 단계별 <strong>30초간 부하를 유지하며 측정</strong>하고, 다음 단계 진입 전 15초의 쿨다운(휴식) 시간을 가짐.</dd>
-      <dt>KPI</dt>
-      <dd><span class="kpi">최대 처리량(RPS/TPS)</span> <span class="kpi">구간별 p95 응답시간</span>
-          <span class="kpi">DB CPU · 커넥션 점유율</span></dd>
-    </dl>
-  </div>
-
-  <div class="test">
-    <div class="test-head"><span class="test-no">시나리오 2</span><span class="test-name">검색어 길이 비교</span></div>
-    <dl>
-      <dt>질문</dt>
-      <dd>검색어 길이에 따른 성능 지연 여부 및 원인 분석</dd>
-      <dt>방법</dt>
-      <dd>2·3·4글자 × 위치 유무 = 6가지 조합을 순차적으로 단일 요청
-          <br>동시에 보내면 길이가 아니라 대기 시간을 재게 된다.</dd>
-      <dt>KPI</dt>
-      <dd><span class="kpi">검색어 길이별 응답 시간 중앙값(p50)</span> <span class="kpi">길이 간 배수</span></dd>
-    </dl>
-  </div>
-
 </section>
 
 <!-- ══════════ 2. 발견된 병목 ══════════ -->
 <section class="stage">
   <div class="step"><span class="step-no">STEP 02</span><h2>발견된 병목</h2></div>
-  <p class="h2note">부하 테스트로 병목 구간을 찾고, DB 로그와 실행계획으로 원인까지 좁혔다.</p>
+  <p class="h2note">부하 테스트로 한계를 찾고, DB 로그와 실행계획으로 원인을 좁혔다</p>
 
-  <h3>① 초당 4건 구간에서 임계치(Bottleneck) 도달</h3>
-  <p>
-    초당 0.5건부터 6건까지 요청량을 단계적으로 상향하며 처리량·지연 시간·자원 사용률을 측정했다.
-  </p>
+  <h3>① 초당 4.4건에서 처리량이 멈춘다</h3>
   <div class="scroll">
     <table>
       <thead><tr><th>목표 rate</th><th>실제 처리</th><th>중앙값</th><th>p95</th><th>DB CPU</th><th>커넥션</th></tr></thead>
@@ -588,67 +521,26 @@ services:
     </table>
   </div>
   <p>
-    <strong>처리량 상한은 초당 4.4건.</strong><br>
-    요청 자체는 에러 없이 성공(실패율 0%)했으나 지연 시간(p95)이 4초 이상으로 급증했다.<br>
-    서버 다운보다 사용자 경험 측면에서 더 치명적인 성능 지연 형태였다.
-  </p>
-  <h4><span class="cause-no">원인</span>DB CPU 병목</h4>
-  <p>
-    앱 서버 CPU 사용률은 평균 1.9% 수준에 머문 반면, DB CPU가 2개 코어를 완전히 점유(197%)하고 있었다.<br>
-    커넥션 풀 부족 현상은 DB CPU 포화 이후 연쇄적으로 발생한 결과일 뿐, 근본 원인은 DB의 CPU 과점유였다.
+    에러는 없었지만(실패율 0%) p95가 4초를 넘었습니다. 앱 CPU는 평균 1.9%인데 <strong>DB CPU가 2코어를 다 쓰고 있어(197%)</strong>,
+    커넥션 부족은 DB 포화가 낳은 결과일 뿐 근본 원인은 DB 쿼리였습니다.
   </p>
 
   <h3>② 검색 한 번에 DB가 722ms를 쓴다</h3>
-  <p>
-    실제 호출 쿼리를 수집한 결과, 1회 검색마다 2개의 쿼리가 연속 실행되고 있었다.
-  </p>
-  <pre><code>목록 조회   424ms
-개수 세기   298ms
+  <p>DB 로그로 실제 쿼리를 잡아 보니 검색 한 번에 쿼리 두 개가 이어서 실행되고 있었습니다.</p>
+  <pre><code>목록 조회   424ms   ← 이름순 정렬: 20건만 필요해도 조건에 맞는 행을 전부 찾아 정렬 (정렬 없으면 0.7ms)
+개수 세기   298ms   ← 페이징(Page)이 붙이는 COUNT(*): 화면에 안 쓰는 총 건수를 매번 계산
 ─────────────────
            722ms   ← 응답 730ms와 일치</code></pre>
 
-  <h4><span class="cause-no">원인 1</span>목록 조회 지연 — 전체 데이터 정렬(Name-order Sorting)</h4>
+  <h3>③ 2글자 검색만 결과 건수와 상관없이 느리다</h3>
   <p>
-    상위 20건만 조회함에도 <strong>조건에 맞는 행 전체를 추출해 정렬을 수행</strong>했다.
-    예를 들어 '김밥' 검색 시 매칭되는 10,135건을 정렬하기 위해
-    <strong>전체 65만 행 테이블 스캔</strong>이 발생했다.
-  </p>
-  <pre><code>정렬 미적용      →   0.7ms
-이름순 정렬 적용 → 215.7ms</code></pre>
-
-  <h4><span class="cause-no">원인 2</span>Count 쿼리 지연 — 전체 행 스캔(COUNT(*))</h4>
-  <p>
-    무한 스크롤 구현 과정에서 전체 데이터 개수 산출을 위한
-    <code>COUNT(*)</code> 쿼리를 <strong>추가적으로 실행</strong>했다.
-  </p>
-  <p>
-    화면에는 20건만 노출하지만, 전체 개수를 파악하기 위해 조건에 맞는
-    <strong>65만 개 행 전체를 세면서 298ms의 지연이 추가 발생</strong>했다.
-  </p>
-
-  <h3>③ 2글자 검색만 유독 느린 이유 — 실행계획이 갈린다</h3>
-  <p>
-    검색어 길이별 응답 시간을 비교한 결과, 2글자 구간만 결과 건수와 <strong>무관하게</strong>
-    113~124ms로 일정한 지연이 발생했다(5,731건이든 20,964건이든 동일). 소요 시간이 결과량에 비례하지
-    않는다는 것은 <strong>매번 테이블 전체를 스캔하고 있음을 의미</strong>했다.
+    2글자는 결과가 5,731건이든 20,964건이든 113~124ms로 일정했습니다. 시간이 결과량에 비례하지 않는다는 건 <strong>매번 테이블 전체를 읽는다</strong>는 뜻입니다.
+    앞뒤가 열린 <code>%김밥%</code>는 결과 건수를 예측하기 어려워, DB가 건수를 최대 110배 적게 추정하고 인덱스 대신 전체 스캔을 골랐습니다.
   </p>
   <pre><code>'김밥' → 예상  355건, 실제 3,378건  ( 10배 오차)
 '커피' → 예상   27건, 실제 2,963건  (110배 오차)</code></pre>
 
-  <h4><span class="cause-no">원인</span>실행계획 오선택 — 예상 건수(Cardinality) 오추정</h4>
-  <p>
-    DB 옵티마이저는 예상 결과 건수(Cardinality)를 기반으로 인덱스 스캔과 풀 테이블 스캔 중 효율적인 방식을 판단했다.
-    그러나 와일드카드가 앞뒤로 붙은 검색(%김밥%)은 데이터 분포 예측이 어렵다. DB는 실제 결과 건수를 최대 110배까지 오추정하여,
-    인덱스를 타는 대신 풀 테이블 스캔(Full Table Scan)이 더 유리하다고 오판했다.
-  </p>
-  <p>
-    반면 3글자 이상부터는 파싱된 검색어 조합이 구체화되어 카디널리티 추정 오차가 줄어들었고, 정상적으로 인덱스를 타는 실행 계획을 선택했다.
-  </p>
-
   <h3>④ 위치 기반 검색은 꺼낸 데이터의 99%를 버린다</h3>
-  <p>
-    반경별로 DB가 실제 스캔하는 행 수와 소요 시간을 측정했다. 쿼리 실행 비용이 반경의 <strong>면적(제곱)</strong>에 비례하여 증가했다.
-  </p>
   <div class="scroll">
     <table>
       <thead><tr><th>반경</th><th>꺼내는 행</th><th>실제 쓰는 행</th><th>시간</th></tr></thead>
@@ -659,35 +551,16 @@ services:
       </tbody>
     </table>
   </div>
-
-  <h4><span class="cause-no">원인</span>이름 조건의 사후 필터링(Post-filtering)</h4>
-  <p>
-    좌표 인덱스에는 식당 이름 조건이 포함되어 있지 않았다.
-  </p>
-  <p>
-    이로 인해 DB는 지정한 반경 영역(Bounding Box) 내부의 모든 데이터를
-    <strong>먼저 전부 읽어들인 뒤</strong>, 이름 조건으로 걸러내는 사후 필터링 방식을 수행했다.
-  </p>
-  <p>
-    기존 10km 반경 조건에서는 77,067개 행을 스캔했으나, 이 중
-    <strong>76,091개(99%)가 버려지고</strong> 976개 행만 최종 결과로 사용되었다.
-  </p>
-
+  <p>좌표 인덱스에 이름 조건이 없어, 반경 안의 행을 <strong>전부 읽은 뒤 이름으로 거르고</strong> 있었습니다. 비용이 반경의 면적에 비례해 늘었습니다.</p>
 </section>
 
 <!-- ══════════ 3. 개선 조치 ══════════ -->
 <section class="stage">
   <div class="step"><span class="step-no">STEP 03</span><h2>개선 조치</h2></div>
-  <p class="h2note">네 곳을 개선했다. 각 조치 항목에 연관된 병목 원인을 명시했다. 
-    병목 ①(초당 4.4건 상한)은 개별 원인들의 합산 결과이므로 직접적인 수정 대상이 아니다. 
-    아래 네 가지 조치가 병목 ①에 대한 해법이며, 최종 결과는 STEP 04에 정리했다. 
-    모든 의사결정은 대안별 성능을 비교 측정한 뒤 선택했다.</p>
+  <p class="h2note">네 곳을 고쳤고, 모든 선택은 대안을 함께 측정해 비교한 뒤 정했다</p>
 
-  <h3><span class="fix-no">01</span>정렬을 이름순 → id순으로<span class="fix-for">병목 ②</span></h3>
-  <p>
-    Primary Key(id) 기준 정렬을 적용하면 기본키 인덱스를 순차적으로 스캔하다가 필요한 <strong>20건을 충족하는 즉시 쿼리를 조기 종료(Early Stop)</strong>할 수 있다. 
-    세 가지 정렬 후보를 비교 측정한 후 최적안을 선택했다.
-  </p>
+  <h3><span class="fix-no">01</span>정렬을 이름순 → 기본키(id)순으로<span class="fix-for">병목 ②</span></h3>
+  <p>id순이면 기본키 인덱스를 순서대로 읽다가 <strong>20건이 차는 즉시 멈출 수 있습니다.</strong></p>
   <div class="scroll">
     <table>
       <thead><tr><th>정렬</th><th>흔한 검색어</th><th>희귀 검색어</th><th>순서 안정성</th></tr></thead>
@@ -698,52 +571,21 @@ services:
       </tbody>
     </table>
   </div>
-  <p class="caption">
-    정렬을 완전히 제거하면 속도는 가장 빠르지만, <strong>동일한 검색어 요청에도 매번 다른 20건이
-    반환될 수 있다.</strong> DB가 조건에 매칭되는 10,135건 중 임의의 20건을 추출하여 반환하기
-    때문이다. 실제 '김밥' 검색 시 정렬 유무에 따라 반환되는 데이터 목록 자체가 완전히 달라짐을
-    확인했다.
-  </p>
-  <p class="caption">
-    id순 정렬은 이러한 결과의 <strong>재현성(안정성)을 보장</strong>하면서, 기존 이름순 정렬 대비
-    48배의 성능 향상을 확보했다.
+  <p class="caption">정렬을 빼면 가장 빠르지만 같은 검색어에도 매번 다른 20건이 나옵니다. id순은 결과를 일정하게 유지하면서 이름순보다 48배 빨랐습니다.</p>
+
+  <h3><span class="fix-no">02</span>무한 스크롤을 접고 개수 세기를 없앤다<span class="fix-for">병목 ②</span></h3>
+  <p>
+    검색은 목록을 훑는 화면이 아니라 원하는 곳을 찾는 화면이라, 20건 안에 없으면 스크롤보다 검색어를 바꾸는 편이 낫다고 판단해 페이징 처리를 없애고, <strong>20건만 보여주는 방식으로 바꿨습니다.</strong>
+    쓰지 않게 된 <code>COUNT(*)</code>를 없애 검색 한 번의 쿼리가 2개에서 1개로 수정했습니다.
   </p>
 
-  <h3><span class="fix-no">02</span>무한 스크롤을 포기하고 개수 세기를 없앤다<span class="fix-for">병목 ②</span></h3>
-  <p>
-    페이징 로직 구현이 완료된 상태였으나, <strong>UX와 성능 간의 트레이드오프를 고려해</strong>
-    무한 스크롤 기능을 제외하고 20건 단건 노출 방식으로 전환했다. 검색 화면의 본질은 특정 대상을
-    찾는 것이지 전체 목록을 탐색하는 것이 아니므로, 상위 20건 내에 결과가 없으면 스크롤을
-    내리기보다 검색어를 재입력하는 것이 더 효율적인 사용자 행동 패턴이라고 판단했다.
-  </p>
-  <p>
-    페이징 로직을 제거함에 따라 불필요해진 전체 개수 조회(<code>COUNT(*)</code>) 쿼리도 함께
-    제거했다. 이에 따라 단일 검색 요청 시 실행되던 <strong>DB 쿼리 수 역시 2개에서 1개로 단축</strong>되었다.
-  </p>
-  <h3><span class="fix-no">03</span>DB가 실제 검색어를 보고 실행 계획을 세우도록 변경<span class="fix-for">병목 ③</span></h3>
+  <h3><span class="fix-no">03</span>DB가 실제 검색어를 보고 실행 계획을 세우게<span class="fix-for">병목 ③</span></h3>
   <div class="callout">
-    <span class="tag">01을 적용하고 재보니 회귀가 났다</span>
-    <p>
-      흔한 검색어는 빨라졌는데 <strong>희귀한 검색어가 오히려 느려졌다.</strong>
-      조기 종료(Early Stop) 특성상 20건을 채울 때까지 인덱스를 계속 찾아야 한다. 
-      그래서 검색 결과가 적을수록 20건을 채우기 위해 <strong>더 멀리까지 훑게 되면서</strong> 시간이 오래 걸린 것이었다.
-    </p>
-    <pre><code>결과 20,964건 → 2ms      결과 47건 →  70ms
-결과 10,135건 → 2ms      결과 21건 → 227ms</code></pre>
+    <span class="tag">01을 적용하고 다시 재보니 회귀가 났다</span>
+    <p>흔한 검색어는 빨라졌는데 <strong>희귀 검색어가 오히려 느려졌습니다.</strong> 20건을 채울 때까지 인덱스를 읽는 방식이라, 결과가 적을수록 더 멀리 읽어야 했습니다.
+    게다가 PostgreSQL은 같은 쿼리를 5번 실행하면 <strong>검색어 값을 보지 않는 고정 실행 계획</strong>을 재사용해 이 차이를 고려하지 못했습니다.</p>
   </div>
-  <h4><span class="cause-no">원인</span>DB의 실행 계획 고정(Generic Plan)</h4>
-  <p>
-    DB(PostgreSQL)는 같은 쿼리가 5번 이상 실행되면 <strong>검색어 파라미터와 상관없이
-    고정된 실행 계획을 재사용</strong>한다. 이로 인해 검색어마다 다른 결과 건수를
-    예측하지 못했다.
-  </p>
-
-  <h4><span class="fix-tag">해결</span>Custom Plan 강제 적용</h4>
-  <p>
-    DB 접속 옵션에 <code>force_custom_plan</code>을 추가해, <strong>매번 입력된 검색어에 맞춰
-    최적의 실행 계획을 세우도록</strong> 했다.
-  </p>
-  <pre><code>?options=-c plan_cache_mode=force_custom_plan</code></pre>
+  <p>DB 접속 옵션에 <code>plan_cache_mode=force_custom_plan</code>을 넣어 <strong>매번 실제 검색어로 계획을 세우게</strong> 했습니다.</p>
   <div class="scroll">
     <table>
       <thead><tr><th>결과 건수</th><th>20,964</th><th>10,135</th><th>1,112</th><th>47</th><th>21</th><th>17</th></tr></thead>
@@ -753,70 +595,32 @@ services:
       </tbody>
     </table>
   </div>
-  <p class="caption">
-    설정 적용 후 느렸던 희귀 검색어(227ms → 3ms)를 포함해 전 구간에서 3~12ms 수준의 균일한 성능을 확보했다.
-  </p>
-
   <div class="callout good">
-    <span class="tag">매번 계획을 짜면 그 비용은 얼마인가</span>
-    <p>
-      "매 요청마다 실행 계획을 다시 수립하면 CPU 오버헤드가 크지 않은가"라는 정당한 의문이 생길 수 있다.<br>
-      이에 계획 수립 시간(Planning Time)과 실제 실행 시간(Execution Time)을 분리해 검증했다.
-    </p>
-    <pre><code>계획을 새로 짜는 비용     0.03 ~ 0.08ms
-계획을 잘못 골랐을 때        133ms   ← 1,600배</code></pre>
-    <p>
-      <strong>대안 검증: 실행 계획을 하나로 고정하는 경우</strong><br>
-      쿼리 구조를 변경해 특정 인덱스 경로로 고정하는 방법도 시도했다. 인덱스를 강제하면
-      희귀 검색어는 0.06ms로 개선되었으나, 반대로 <strong>흔한 검색어가 0.4ms에서 479ms로
-      급증</strong>했다. 검색어 분포(흔함/희귀)에 따라 최적의 접근 방식이 달라지므로,
-      어느 한쪽으로 고정하는 방식은 성립하지 않았다. 결국 매번 최적의 계획을 선택하는 것이
-      유일한 해법이었다.
-    </p>
+    <span class="tag">매번 계획을 세우는 비용과 대안 검증</span>
+    <p>계획 시간과 실행 시간을 나눠 재니 <strong>계획을 새로 세우는 비용은 0.03~0.08ms</strong>, 계획을 잘못 골랐을 때의 손해는 133ms였습니다(1,600배).
+    인덱스 경로를 하나로 고정하는 방법도 시도했지만, 희귀 검색어는 0.06ms로 빨라진 대신 <strong>흔한 검색어가 0.4ms → 479ms로 느려져</strong> 쓸 수 없었습니다.
+    이 설정은 다른 쿼리에도 적용되지만, 일반 조인 쿼리의 계획 시간은 0.065ms로 초당 150건에서도 코어 하나의 3% 수준이었습니다.</p>
   </div>
-  <p class="caption">
-    이 설정은 접속 전체에 걸려서 검색이 아닌 쿼리도 매번 계획한다. 평범한 조인 쿼리로 재보니
-    계획 시간이 0.065ms로, 초당 150건을 받아도 코어 하나의 3% 수준이었다.
-  </p>
 
   <h3><span class="fix-no">04</span>필요한 만큼만 넓혀서 찾기<span class="fix-for">병목 ④</span></h3>
   <p>
-    앞의 4개의 개선점을 고치고 나니 <strong>이번엔 위치 기반 검색이 가장 느린 경로가 됐다</strong>(22.6ms).
-    그래서 <strong>1km 반경부터 시작해 결과가 부족할 때만 범위를 점진적으로 넓히는 방식으로 변경했다.</strong>
+    앞의 세 가지를 고치고 나니 위치 기반 검색이 가장 느린 경로(22.6ms)가 됐습니다. 그래서 <strong>1km부터 찾고 결과가 부족할 때만 반경을 넓히도록</strong> 바꿨습니다.
+    가까운 순 20건만 보여주므로 1km 안에 20건이 있으면 더 먼 곳은 어차피 결과에 들지 못해, 10km 검색과 <strong>결과가 같습니다.</strong>
+    가까운 곳에 없으면 끝까지 넓혀 3.7km·7.2km 떨어진 가게도 찾는 것을 테스트로 확인했습니다.
   </p>
-  <div class="callout good">
-    <span class="tag">왜 답이 달라지지 않나</span>
-    <p>
-      어차피 가까운 순으로 정렬해서 앞의 20개만 보여준다. <strong>1km 안에 이미 20개가 있으면
-      그보다 먼 가게는 그 20개 안에 못 든다.</strong> 따라서 탐색 범위를 줄여도 기존 10km 검색과 완전 동일한 결과를 보장한다.
-    </p>
-    <p>
-      가까운 곳에 없으면 끝까지 넓힌다. 3.7km·7.2km 떨어진 가게도 그대로 찾아내며,
-      그 동작을 테스트로 검증 했다.
-    </p>
-  </div>
 </section>
 
 <!-- ══════════ 4. 최종 결과 ══════════ -->
 <section class="stage">
   <div class="step"><span class="step-no">STEP 04</span><h2>최종 결과</h2></div>
-  <p class="h2note">같은 조건으로 다시 측정하고, 운영에 배포해 실제 서버에서 확인했다.</p>
+  <p class="h2note">같은 조건으로 다시 재고, 운영에 배포해 실제 서버에서 확인했다</p>
 
   <h3>처리량</h3>
   <div class="bars">
-    <div class="bar-row">
-      <span class="bar-label">개선 전</span>
-      <span class="bar-track"><span class="bar b-slow" style="width:2.9%"></span><span class="bar-val before">4.4건/초</span></span>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">개선 후</span>
-      <span class="bar-track"><span class="bar b-fast" style="width:100%"></span><span class="bar-val after">150건/초 +</span></span>
-    </div>
+    <div class="bar-row"><span class="bar-label">개선 전</span><span class="bar-track"><span class="bar b-slow" style="width:2.9%"></span><span class="bar-val before">4.4건/초</span></span></div>
+    <div class="bar-row"><span class="bar-label">개선 후</span><span class="bar-track"><span class="bar b-fast" style="width:86%"></span><span class="bar-val after">150건/초 +</span></span></div>
   </div>
-  <p class="caption">
-    초당 150건의 부하를 주입해도 목표 응답 속도를 저하 없이 그대로 유지했다.<br>
-    현재 서버 환경의 최대 처리량 상한은 초당 150건을 초과하는 것으로 확인되었고, 이는 기존 상한(초당 4.4건) 대비 최소 34배 이상 향상된 결과다.
-  </p>
+  <p class="caption">초당 150건을 넣어도 응답 속도가 떨어지지 않아, 상한이 기존(4.4건/초)보다 최소 34배 이상 높아졌습니다.</p>
 
   <h3>응답 시간 · 자원</h3>
   <div class="scroll">
@@ -831,13 +635,8 @@ services:
       </tbody>
     </table>
   </div>
-  <p><strong>모든 검색 경로가 2ms 미만이 됐다.</strong></p>
 
   <h3>운영 서버 실측</h3>
-  <p>
-    배포 후 운영 DB에서 직접 쟀다. 실제 서버(2vCPU)는 CPU가 느려 전체 스캔의 대가를 더 크게
-    치르고 있었기 때문에, <strong>개선 폭이 로컬보다 컸다.</strong>
-  </p>
   <div class="scroll">
     <table>
       <thead><tr><th>운영 DB 쿼리</th><th>개선 전</th><th>개선 후</th><th>배수</th></tr></thead>
@@ -847,15 +646,10 @@ services:
       </tbody>
     </table>
   </div>
-  <p class="caption">
-    개선 전 운영 검색은 1초가 넘었다. 배포·테스트(827개 통과)를 거쳐 현재 실사용자에게
-    적용돼 있다.
-  </p>
+  <p class="caption">운영 서버는 CPU가 느려 전체 스캔의 대가를 더 크게 치르고 있었기 때문에 개선 폭이 로컬보다 컸습니다.</p>
 </section>
 
-<footer>
-  Java 21 / Spring Boot · PostgreSQL 17 · React Native (Expo) · k6 · Docker
-</footer>
+<footer>Java 21 / Spring Boot · PostgreSQL 17 · React Native (Expo) · k6 · Docker</footer>
 
 </div>
 </body>
