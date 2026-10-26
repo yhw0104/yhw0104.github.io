@@ -457,9 +457,9 @@ table.left th, table.left td { text-align: left; white-space: normal; }
 <header>
   <p class="kicker">혼정 · 백엔드 성능 개선 부하 테스트 · 2026-08 ~ 09</p>
   <h1>검색 하나가 서버 용량의 97%를 쓰고 있었다</h1>
-  <p class="lede">2vCPU 서버의 한계를 k6 부하 테스트로 측정하고, 검색 쿼리의 병목 네 곳을 고쳐 처리량을 34배 이상 끌어올린 뒤 운영에 배포했습니다.</p>
+  <p class="lede">2vCPU 운영 사양을 재현한 환경에서 k6로 한계를 측정하고, 검색 쿼리의 병목 네 곳을 고쳐 처리량을 34배 이상 끌어올린 뒤 운영에 배포했습니다.</p>
   <div class="headline">
-    <div><p class="label">검색 처리량</p><p class="fig">34배 이상</p><p class="sub">4.4건/초 → 150건/초에도 여유</p></div>
+    <div><p class="label">검색 처리량</p><p class="fig">34배 이상</p><p class="sub">4.4건/초 → 150건/초에도 여유<br>(재현 환경)</p></div>
     <div><p class="label">검색 응답시간</p><p class="fig">558배</p><p class="sub">669.8ms → 1.2ms</p></div>
     <div><p class="label">최대 부하 시 DB CPU</p><p class="fig">197% → 20%</p><p class="sub">2코어 포화 → 여유</p></div>
   </div>
@@ -534,7 +534,7 @@ table.left th, table.left td { text-align: left; white-space: normal; }
 
   <h3>③ 2글자 검색만 결과 건수와 상관없이 느리다</h3>
   <p>
-    2글자는 결과가 5,731건이든 20,964건이든 113~124ms로 일정했습니다. 시간이 결과량에 비례하지 않는다는 건 <strong>매번 테이블 전체를 읽는다</strong>는 뜻입니다.
+    2글자 검색어의 <strong>COUNT 쿼리 하나</strong>는 결과가 5,731건이든 20,964건이든 113~124ms로 일정했습니다. 시간이 결과량에 비례하지 않는다는 건 <strong>매번 테이블 전체를 읽는다</strong>는 뜻입니다.
     앞뒤가 열린 <code>%김밥%</code>는 결과 건수를 예측하기 어려워, DB가 건수를 최대 110배 적게 추정하고 인덱스 대신 전체 스캔을 골랐습니다.
   </p>
   <pre><code>'김밥' → 예상  355건, 실제 3,378건  ( 10배 오차)
@@ -646,7 +646,7 @@ table.left th, table.left td { text-align: left; white-space: normal; }
       </tbody>
     </table>
   </div>
-  <p class="caption">운영 서버는 CPU가 느려 전체 스캔의 대가를 더 크게 치르고 있었기 때문에 개선 폭이 로컬보다 컸습니다.</p>
+  <p class="caption">운영 DB에서 같은 쿼리의 실행 시간을 직접 잰 값입니다. 개선 전 운영 검색 쿼리는 1초가 넘었습니다.</p>
 </section>
 
 <footer>Java 21 / Spring Boot · PostgreSQL 17 · React Native (Expo) · k6 · Docker</footer>
